@@ -11,7 +11,7 @@ sock.listen(1)
 while True:
     # Wait for a connection
     print("waiting for a connection")
-    connection, client_address = sock.accept()
+    connection, client_address = sock.accept() #host dan port
     print('connection from', client_address)
 
     # Receive filename
