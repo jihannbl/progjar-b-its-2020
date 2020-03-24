@@ -2,36 +2,6 @@ from file_handler import File_Handle
 import json
 import logging
 
-'''
-        PROTOCOL FORMAT
-
-string terbagi menjadi 2 bagian yang dipisahkan oleh spasi
-Format : command *spasi* parameter *spasi* parameter
-
-        FITUR
-
-a. Meletakkan File
-   Untuk meletakkan file ke dalam folder "storage"
-   Request : add_file
-   Parameter : namafile *spasi* isi dari file
-   Response : berhasil -> "File Added"
-              gagal -> "ERROR"
-
-b. List File
-   Untuk melihat list file di dalam folder 'storage'
-   Request : list_file
-   Parameter: -
-   Response: list file yang ada dalam folder 'storage'
-
-c. Mengambil File
-   Untuk mengambil file berdasarkan nama file dari folder 'storage'
-   Request : get_file
-   Parameter : namafile yang ingin diambil
-   Response: file ter download pada folder tempat script berada
-
-d. Jika command tidak dikenali akan merespon dengan ERRCMD
-
-'''
 p = File_Handle()
 
 class Machine:
