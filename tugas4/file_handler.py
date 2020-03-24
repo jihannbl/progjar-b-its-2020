@@ -11,8 +11,7 @@ class File_Handle:
     def upload(self,filename=None,file=None):
         
         f = open("files/"+filename,"wb")
-        # f.write(file)
-        f.write(base64.b64decode(file))
+        f.write(file)
         return True
 
     def download(self,filename=None):
