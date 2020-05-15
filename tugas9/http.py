@@ -12,7 +12,7 @@ class HttpServer:
 		self.types['.jpg']='image/jpeg'
 		self.types['.txt']='text/plain'
 		self.types['.html']='text/html'
-	def response(self,kode=404,message='Not Found',messagebody='',headers={}):
+	def response(self,kode=404,message='Not Found',messagebody=bytes(),headers={}):
 		tanggal = datetime.now().strftime('%c')
 		resp=[]
 		resp.append("HTTP/1.0 {} {}\r\n" . format(kode,message))
@@ -23,19 +23,27 @@ class HttpServer:
 		for kk in headers:
 			resp.append("{}:{}\r\n" . format(kk,headers[kk]))
 		resp.append("\r\n")
-		resp.append("{}" . format(messagebody))
-		response_str=''
+
+		response_headers=''
 		for i in resp:
-			response_str="{}{}" . format(response_str,i)
-		return response_str
+			response_headers="{}{}" . format(response_headers,i)
+		#menggabungkan resp menjadi satu string dan menggabungkan dengan messagebody yang berupa bytes
+		#response harus berupa bytes
+		#message body harus diubah dulu menjadi bytes
+		if (type(messagebody) is not bytes):
+			messagebody = messagebody.encode()
+
+		response = response_headers.encode() + messagebody
+		#response adalah bytes
+		return response
 
 	def proses(self,data):
-
+		
 		requests = data.split("\r\n")
-		# print(requests)
+		#print(requests)
 
 		baris = requests[0]
-		# print(baris)
+		#print(baris)
 
 		all_headers = [n for n in requests[1:] if n!='']
 
@@ -44,14 +52,10 @@ class HttpServer:
 			method=j[0].upper().strip()
 			if (method=='GET'):
 				object_address = j[1].strip()
-				print('objek', object_address)
 				return self.http_get(object_address, all_headers)
 			if (method=='POST'):
-				tmp = requests[18].rsplit("=")	
-				value = tmp[0]
-				# print("ini val", value)
 				object_address = j[1].strip()
-				return self.http_post(object_address, all_headers,value)
+				return self.http_post(object_address, all_headers)
 			else:
 				return self.response(400,'Bad Request','',{})
 		except IndexError:
@@ -61,28 +65,23 @@ class HttpServer:
 		thedir='.'
 		if thedir+object_address not in files:
 			return self.response(404,'Not Found','',{})
-		fp = open(thedir+object_address,'r')
+		fp = open(thedir+object_address,'rb') #rb => artinya adalah read dalam bentuk binary
+		#harus membaca dalam bentuk byte dan BINARY
 		isi = fp.read()
-
+		
 		fext = os.path.splitext(thedir+object_address)[1]
 		content_type = self.types[fext]
-
+		
 		headers={}
 		headers['Content-type']=content_type
-
+		
 		return self.response(200,'OK',isi,headers)
-	def http_post(self,object_address,headers,value):
-		head = headers
-		headers={}
-		isi=""
-		for h in head:
-			if value in h:
-				temp = h.split("=")
-				h="\n"+temp[1]
-			isi+=h+"\n"
+	def http_post(self,object_address,headers):
+		headers ={}
+		isi = "kosong"
 		return self.response(200,'OK',isi,headers)
-
-
+		
+			 	
 #>>> import os.path
 #>>> ext = os.path.splitext('/ak/52.png')
 
@@ -94,3 +93,18 @@ if __name__=="__main__":
 	print(d)
 	d = httpserver.http_get('testing.txt')
 	print(d)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
